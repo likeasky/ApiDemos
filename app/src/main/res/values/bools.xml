@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="atLeastHoneycomb">false</bool>
+    <bool name="atLeastHoneycombMR2">false</bool>
+    <bool name="atLeastIceCreamSandwich">false</bool>
+    <bool name="atLeastJellyBean">false</bool>
+    <bool name="atLeastJellyBeanMR1">false</bool>
+    <bool name="atLeastJellyBeanMR2">false</bool>
+    <bool name="atLeastKitKat">false</bool>
+    <bool name="atLeastRelease">false</bool>
+</resources>

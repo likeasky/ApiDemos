@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.android.apis" >
+
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <application android:name="ApiDemosApplication"
+        android:label="@string/activity_sample_code"
+        android:icon="@drawable/app_sample_code"
+        android:hardwareAccelerated="true"
+        android:supportsRtl="true">
+
+        <activity android:name="ApiDemos">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".app.LoaderCursor"
+            android:label="@string/loader_cursor"
+            android:enabled="@bool/atLeastHoneycomb">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.SAMPLE_CODE" />
+            </intent-filter>
+        </activity>
+<!--
+        <activity android:name=".app.LoaderCustom"
+            android:label="@string/loader_custom"
+            android:enabled="@bool/atLeastHoneycomb">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.SAMPLE_CODE" />
+            </intent-filter>
+        </activity>
+-->
+        <activity android:name=".app.LoaderThrottle"
+            android:label="@string/loader_throttle"
+            android:enabled="@bool/atLeastHoneycomb">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.SAMPLE_CODE" />
+            </intent-filter>
+        </activity>
+        <provider android:name=".app.LoaderThrottle$SimpleProvider"
+            android:authorities="com.example.android.apis.app.LoaderThrottle"
+            android:enabled="@bool/atLeastHoneycomb" />
+
+        <activity android:name=".app.LoaderRetained"
+            android:label="@string/loader_retained"
+            android:enabled="@bool/atLeastHoneycomb">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.SAMPLE_CODE" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
