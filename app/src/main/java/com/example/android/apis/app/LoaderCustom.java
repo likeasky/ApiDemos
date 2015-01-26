@@ -2,11 +2,14 @@ package com.example.android.apis.app;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.app.ListFragment;
+import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.Loader;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -14,8 +17,21 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.TextView;
+
+import com.example.android.apis.R;
 
 import java.io.File;
 import java.text.Collator;
@@ -30,6 +46,7 @@ import java.util.List;
 public class LoaderCustom extends Activity {
     private String TAG = "LoaderCustom";
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
@@ -77,7 +94,6 @@ public class LoaderCustom extends Activity {
 
             return mLoader.getContext().getResources().getDrawable(
                     android.R.drawable.sym_def_app_icon);
-            )
         }
 
         public String toString() {
@@ -108,6 +124,7 @@ public class LoaderCustom extends Activity {
     public static final Comparator<AppEntry> ALPHA_COMPARATOR = new Comparator<AppEntry>() {
         private final Collator sCollator = Collator.getInstance();
 
+        @Override
         public int compare(AppEntry object1, AppEntry object2) {
             return sCollator.compare(object1.getLabel(), object2.getLabel());
         }
@@ -146,6 +163,7 @@ public class LoaderCustom extends Activity {
             mLoader.getContext().registerReceiver(this, sdFilter);
         }
 
+        @Override
         public void onReceive(Context context, Intent intent) {
             mLoader.onContentChanged();
         }
@@ -164,6 +182,7 @@ public class LoaderCustom extends Activity {
             mPm = getContext().getPackageManager();
         }
 
+        @Override
         public List<AppEntry> loadInBackground() {
             List<ApplicationInfo> apps = mPm.getInstalledApplications(
                     PackageManager.GET_UNINSTALLED_PACKAGES |
@@ -186,6 +205,7 @@ public class LoaderCustom extends Activity {
             return entries;
         }
 
+        @Override
         public void deliverResult(List<AppEntry> apps) {
             if (isReset()) {
                 if (apps != null) {
@@ -204,6 +224,7 @@ public class LoaderCustom extends Activity {
             }
         }
 
+        @Override
         protected void onStartLoading() {
             if (mApps != null) {
                 deliverResult(mApps);
@@ -220,16 +241,19 @@ public class LoaderCustom extends Activity {
             }
         }
 
+        @Override
         protected void onStopLoading() {
             cancelLoad();
         }
 
+        @Override
         public void onCanceled(List<AppEntry> apps) {
             super.onCanceled(apps);
 
             onReleaseResources(apps);
         }
 
+        @Override
         protected void onReset() {
             super.onReset();
 
@@ -252,6 +276,133 @@ public class LoaderCustom extends Activity {
     }
 
     public static class AppListAdapter extends ArrayAdapter<AppEntry> {
-        ###
+        private final LayoutInflater mInflater;
+
+        public AppListAdapter(Context context) {
+            super(context, android.R.layout.simple_list_item_2);
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        public void setData(List<AppEntry> data) {
+            clear();
+            if (data != null) {
+                addAll(data);
+            }
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+
+            if (convertView == null) {
+                view = mInflater.inflate(R.layout.list_item_icon_text, parent, false);
+            } else {
+                view = convertView;
+            }
+
+            AppEntry item = getItem(position);
+            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(item.getIcon());
+            ((TextView) view.findViewById(R.id.text)).setText(item.getLabel());
+
+            return view;
+        }
+    }
+
+    public static class AppListFragment extends ListFragment
+            implements SearchView.OnQueryTextListener, SearchView.OnCloseListener,
+            LoaderManager.LoaderCallbacks<List<AppEntry>> {
+
+        AppListAdapter mAdapter;
+
+        SearchView mSearchView;
+
+        String mCurFilter;
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            setEmptyText("No applications");
+
+            setHasOptionsMenu(true);
+
+            mAdapter = new AppListAdapter(getActivity());
+            setListAdapter(mAdapter);
+
+            setListShown(false);
+
+            getLoaderManager().initLoader(0, null, this);
+        }
+
+        public static class MySearchView extends SearchView {
+            public MySearchView(Context context) {
+                super(context);
+            }
+
+            @Override
+            public void onActionViewCollapsed() {
+                setQuery("", false);
+                super.onActionViewCollapsed();
+            }
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            MenuItem item = menu.add("Search");
+            item.setIcon(android.R.drawable.ic_menu_search);
+            item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+                    | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+            mSearchView = new MySearchView(getActivity());
+            mSearchView.setOnQueryTextListener(this);
+            mSearchView.setOnCloseListener(this);
+            mSearchView.setIconifiedByDefault(true);
+            item.setActionView(mSearchView);
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
+            mAdapter.getFilter().filter(mCurFilter);
+            return true;
+        }
+
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            return true;
+        }
+
+        @Override
+        public boolean onClose() {
+            if (!TextUtils.isEmpty(mSearchView.getQuery())) {
+                mSearchView.setQuery(null, true);
+            }
+            return true;
+        }
+
+        @Override
+        public void onListItemClick(ListView l, View v, int position, long id) {
+            Log.i("LoaderCustom", "Item clicked: " + id);
+        }
+
+        @Override
+        public Loader<List<AppEntry>> onCreateLoader(int id, Bundle args) {
+            return new AppListLoader(getActivity());
+        }
+
+        @Override
+        public void onLoadFinished(Loader<List<AppEntry>> loader, List<AppEntry> data) {
+            mAdapter.setData(data);
+
+            if (isResumed()) {
+                setListShown(true);
+            } else {
+                setListShownNoAnimation(true);
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<List<AppEntry>> loader) {
+            mAdapter.setData(null);
+        }
     }
 }
