@@ -61,6 +61,7 @@ public class LoaderCustom extends Activity {
 
     public static class AppEntry {
         public AppEntry(AppListLoader loader, ApplicationInfo info) {
+            Log.d(TAG, "AppEntry()");
             mLoader = loader;
             mInfo = info;
             mApkFile = new File(info.sourceDir);
@@ -96,6 +97,7 @@ public class LoaderCustom extends Activity {
                     android.R.drawable.sym_def_app_icon);
         }
 
+        @Override
         public String toString() {
             return mLabel;
         }
@@ -135,6 +137,7 @@ public class LoaderCustom extends Activity {
         int mLastDensity;
 
         boolean applyNewConfig(Resources res) {
+            Log.d(TAG, "InterestingConfigChanges.applyNewConfig()");
             int configChanges = mLastConfiguration.updateFrom(res.getConfiguration());
             boolean densityChanged = mLastDensity != res.getDisplayMetrics().densityDpi;
             if (densityChanged || (configChanges & (ActivityInfo.CONFIG_LOCALE
@@ -150,6 +153,7 @@ public class LoaderCustom extends Activity {
         final AppListLoader mLoader;
 
         public PackageIntentReceiver(AppListLoader loader) {
+            Log.d(TAG, "PackageIntentReceiver()");
             mLoader = loader;
             IntentFilter filter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
             filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
@@ -165,6 +169,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "PackageIntentReceiver.onReceive()");
             mLoader.onContentChanged();
         }
     }
@@ -178,12 +183,14 @@ public class LoaderCustom extends Activity {
 
         public AppListLoader(Context context) {
             super(context);
+            Log.d(TAG, "AppListLoader()");
 
             mPm = getContext().getPackageManager();
         }
 
         @Override
         public List<AppEntry> loadInBackground() {
+            Log.d(TAG, "AppListLoader.loadInBackground()");
             List<ApplicationInfo> apps = mPm.getInstalledApplications(
                     PackageManager.GET_UNINSTALLED_PACKAGES |
                     PackageManager.GET_DISABLED_COMPONENTS);
@@ -207,6 +214,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public void deliverResult(List<AppEntry> apps) {
+            Log.d(TAG, "AppListLoader.deliverResult()");
             if (isReset()) {
                 if (apps != null) {
                     onReleaseResources(apps);
@@ -226,6 +234,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         protected void onStartLoading() {
+            Log.d(TAG, "AppListLoader.onStartLoading()");
             if (mApps != null) {
                 deliverResult(mApps);
             }
@@ -390,6 +399,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public Loader<List<AppEntry>> onCreateLoader(int id, Bundle args) {
+            Log.d(TAG, "AppListFragment.onCreateLoader()");
             return new AppListLoader(getActivity());
         }
 
