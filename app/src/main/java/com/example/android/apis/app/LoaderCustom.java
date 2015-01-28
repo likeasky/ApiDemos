@@ -44,7 +44,7 @@ import java.util.List;
  * Created by nobody on 2015-01-25.
  */
 public class LoaderCustom extends Activity {
-    private String TAG = "LoaderCustom";
+    private static String TAG = "LoaderCustom";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,10 +280,12 @@ public class LoaderCustom extends Activity {
 
         public AppListAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_2);
+            Log.d(TAG, "AppListAdapter()");
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         public void setData(List<AppEntry> data) {
+            Log.d(TAG, "AppListAdapter.setData()");
             clear();
             if (data != null) {
                 addAll(data);
@@ -292,6 +294,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            Log.d(TAG, "AppListAdapter.getView()");
             View view;
 
             if (convertView == null) {
@@ -320,6 +323,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
+            Log.d(TAG, "AppListFragment.onActivityCreated()");
             super.onActivityCreated(savedInstanceState);
 
             setEmptyText("No applications");
