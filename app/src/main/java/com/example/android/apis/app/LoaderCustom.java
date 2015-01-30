@@ -252,11 +252,13 @@ public class LoaderCustom extends Activity {
 
         @Override
         protected void onStopLoading() {
+            Log.d(TAG, "AppListLoader.onStopLoading()");
             cancelLoad();
         }
 
         @Override
         public void onCanceled(List<AppEntry> apps) {
+            Log.d(TAG, "AppListLoader.onCanceled()");
             super.onCanceled(apps);
 
             onReleaseResources(apps);
@@ -264,6 +266,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         protected void onReset() {
+            Log.d(TAG, "AppListLoader.onReset()");
             super.onReset();
 
             onStopLoading();
@@ -350,10 +353,12 @@ public class LoaderCustom extends Activity {
         public static class MySearchView extends SearchView {
             public MySearchView(Context context) {
                 super(context);
+                Log.d(TAG, "AppListFragment:MySearchView()");
             }
 
             @Override
             public void onActionViewCollapsed() {
+                Log.d(TAG, "AppListFragment:MySearchView.onActionViewCollapsed()");
                 setQuery("", false);
                 super.onActionViewCollapsed();
             }
@@ -361,6 +366,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            Log.d(TAG, "AppListFragment.onCreateOptionsMenu()");
             MenuItem item = menu.add("Search");
             item.setIcon(android.R.drawable.ic_menu_search);
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
@@ -374,6 +380,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public boolean onQueryTextChange(String newText) {
+            Log.d(TAG, "AppListFragment.onQueryTextChange()");
             mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
             mAdapter.getFilter().filter(mCurFilter);
             return true;
@@ -381,11 +388,13 @@ public class LoaderCustom extends Activity {
 
         @Override
         public boolean onQueryTextSubmit(String query) {
+            Log.d(TAG, "AppListFragment.onQueryTextSubmit()");
             return true;
         }
 
         @Override
         public boolean onClose() {
+            Log.d(TAG, "AppListFragment.onClose()");
             if (!TextUtils.isEmpty(mSearchView.getQuery())) {
                 mSearchView.setQuery(null, true);
             }
@@ -405,6 +414,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public void onLoadFinished(Loader<List<AppEntry>> loader, List<AppEntry> data) {
+            Log.d(TAG, "AppListFragment.onLoadFinished()");
             mAdapter.setData(data);
 
             if (isResumed()) {
@@ -416,6 +426,7 @@ public class LoaderCustom extends Activity {
 
         @Override
         public void onLoaderReset(Loader<List<AppEntry>> loader) {
+            Log.d(TAG, "AppListFragment.onLoaderReset()");
             mAdapter.setData(null);
         }
     }
